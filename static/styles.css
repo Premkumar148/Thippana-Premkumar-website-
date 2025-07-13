@@ -1,1 +1,35 @@
 
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f3f4f6; /* Light gray background */ 
+} 
+.container { 
+    max-width: 1200px; /* Increased max width for more content */ 
+} 
+/* Custom scrollbar for be er aesthe cs */ 
+::-webkit-scrollbar { 
+    width: 8px; 
+    height: 8px; 
+} 
+::-webkit-scrollbar-track { 
+    background: #e0e0e0; 
+    border-radius: 10px; 
+} 
+::-webkit-scrollbar-thumb { 
+    background: #888; 
+    border-radius: 10px; 
+} 
+::-webkit-scrollbar-thumb:hover { 
+    background: #555; 
+} 
+.screen { 
+    display: none; /* Hide all screens by default */ 
+} 
+.screen.active { 
+    display: flex; /* Show ac ve screen */ 
+} 
+.nav-button.active { 
+    background-color: #3b82f6; /* Blue for ac ve nav bu on */ 
+    color: white; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
