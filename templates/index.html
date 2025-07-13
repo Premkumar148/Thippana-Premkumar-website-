@@ -1,1 +1,239 @@
-
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Smart Register App</title> 
+    <!-- Tailwind CSS CDN --> 
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <!-- Inter Font --> 
+    <link 
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swa
+ p" rel="stylesheet"> 
+    <!-- Link to external CSS file --> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+</head> 
+<body class="flex flex-col min-h-screen"> 
+    <header class="bg-gradient-to-r from-blue-500 to-indigo-600 shadow-md py-4"> 
+        <div class="container mx-auto px-4 flex flex-col sm:flex-row justify-between items
+center"> 
+            <h1 class="text-3xl font-bold text-white mb-4 sm:mb-0">Smart Register</h1> 
+            <nav class="flex flex-wrap gap-3"> 
+                <button id="navAddItem" class="nav-button bg-blue-400 text-white py-2 px-5 
+rounded-md hover:bg-blue-500 transition duration-150 ease-in-out transform hover:scale
+105 active"> 
+                    Add Item 
+                </button> 
+                <button id="navInventoryView" class="nav-button bg-blue-400 text-white py-2 px-5 
+rounded-md hover:bg-blue-500 transition duration-150 ease-in-out transform hover:scale
+105"> 
+                    Inventory & Valuation 
+                </button> 
+                <button id="navStockModification" class="nav-button bg-blue-400 text-white py-2 
+px-5 rounded-md hover:bg-blue-500 transition duration-150 ease-in-out transform 
+hover:scale-105"> 
+                    Stock Modification 
+                </button> 
+            </nav> 
+        </div> 
+    </header> 
+ 
+    <main class="flex-grow container mx-auto p-4 flex flex-col gap-6"> 
+ 
+        <!-- Message Box for general feedback --> 
+        <div id="globalMessageBox" class="mt-4 p-3 text-sm text-center rounded-md hidden" 
+role="alert"></div> 
+ 
+        <!-- Add Item Screen --> 
+        <section id="addItemScreen" class="screen active bg-white p-6 rounded-xl shadow-lg 
+border border-gray-200 flex-col md:flex-row gap-6"> 
+            <div class="w-full md:w-1/2 mx-auto"> 
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Add New 
+Item</h2> 
+                <form id="itemForm" class="space-y-4"> 
+                    <div> 
+                        <label for="itemId" class="block text-sm font-medium text-gray-700">Item 
+ID</label> 
+                        <input type="text" id="itemId" name="itemId" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                    </div> 
+                    <div> 
+                        <label for="itemName" class="block text-sm font-medium text-gray-700">Item 
+Name</label> 
+                        <input type="text" id="itemName" name="itemName" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                    </div> 
+                    <div> 
+                        <label for="itemQuantity" class="block text-sm font-medium text-gray
+700">Quantity</label> 
+                        <input type="number" id="itemQuantity" name="itemQuantity" required 
+min="0" 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                    </div> 
+                    <div> 
+                        <label for="itemPrice" class="block text-sm font-medium text-gray-700">Cost 
+Price (₹)</label> 
+                        <input type="number" id="itemPrice" name="itemPrice" required step="0.01" 
+min="0" 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                    </div> 
+                    <div class="flex flex-col space-y-3"> 
+                        <button type="submit" id="saveItemBtn" 
+                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue
+700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md 
+transition duration-150 ease-in-out transform hover:scale-105"> 
+                            Add Item 
+                        </button> 
+                        <button type="button" id="clearFormBtn" 
+                                class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray
+600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 shadow-md 
+transition duration-150 ease-in-out transform hover:scale-105"> 
+                            Clear Form 
+                        </button> 
+                    </div> 
+                </form> 
+            </div> 
+        </section> 
+ 
+        <!-- Inventory View & Valuation Screen --> 
+        <section id="inventoryViewScreen" class="screen bg-white p-6 rounded-xl shadow-lg 
+border border-gray-200 flex-col gap-6"> 
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Current Inventory 
+& Valuation</h2> 
+ 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"> 
+                <div class="bg-blue-50 p-4 rounded-md text-center shadow-sm border border-blue
+200"> 
+                    <p class="text-gray-600 text-sm">Total Items (Unique)</p> 
+                    <p id="totalUniqueItems" class="text-2xl font-bold text-blue-700">0</p> 
+                </div> 
+                <div class="bg-green-50 p-4 rounded-md text-center shadow-sm border border
+green-200"> 
+                    <p class="text-gray-600 text-sm">Total Quantity</p> 
+                    <p id="totalQuantity" class="text-2xl font-bold text-green-700">0</p> 
+                </div> 
+                <div class="bg-purple-50 p-4 rounded-md text-center shadow-sm border border
+purple-200"> 
+                    <p class="text-gray-600 text-sm">Total Inventory Value</p> 
+                    <p id="totalValuation" class="text-2xl font-bold text-purple-700">₹0.00</p> 
+                </div> 
+            </div> 
+ 
+            <div class="mb-4"> 
+                <input type="text" id="inventorySearchBar" placeholder="Search by item name or 
+ID..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm 
+focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+            </div> 
+ 
+            <div class="overflow-x-auto rounded-lg border border-gray-300"> 
+                <table class="min-w-full divide-y divide-gray-200"> 
+                    <thead class="bg-gray-50"> 
+                        <tr> 
+                            <th scope="col" class="px-6 py-3 text-le text-xs font-medium text-gray-500 
+uppercase tracking-wider">ID</th> 
+                            <th scope="col" class="px-6 py-3 text-le text-xs font-medium text-gray-500 
+uppercase tracking-wider">Name</th> 
+                            <th scope="col" class="px-6 py-3 text-le text-xs font-medium text-gray-500 
+uppercase tracking-wider">Quantity</th> 
+                            <th scope="col" class="px-6 py-3 text-le text-xs font-medium text-gray-500 
+uppercase tracking-wider">Cost Price (₹)</th> 
+                            <th scope="col" class="px-6 py-3 text-le text-xs font-medium text-gray-500 
+uppercase tracking-wider">Actions</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody id="inventoryList" class="bg-white divide-y divide-gray-200"> 
+                        <!-- Inventory items will be rendered here by JavaScript --> 
+                    </tbody> 
+                </table> 
+                <div id="noItemsMessage" class="hidden text-center py-8 text-gray-500">No items 
+in inventory. Add some!</div> 
+            </div> 
+        </section> 
+ 
+        <!-- Stock Modification Screen --> 
+        <section id="stockModificationScreen" class="screen bg-white p-6 rounded-xl shadow-lg 
+border border-gray-200 flex-col md:flex-row gap-6"> 
+            <div class="w-full md:w-1/2 mx-auto"> 
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Modify 
+Stock</h2> 
+                <form id="stockModificationForm" class="space-y-4"> 
+                    <div> 
+                        <label for="modifyItemId" class="block text-sm font-medium text-gray
+700">Select Item</label> 
+                        <select id="modifyItemId" required 
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                            <option value="">-- Select an item --</option> 
+                        </select> 
+                    </div> 
+                    <div> 
+                        <label for="modifyQuantity" class="block text-sm font-medium text-gray
+700">Quantity to Change</label> 
+                        <input type="number" id="modifyQuantity" required min="1" 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                    </div> 
+                    <div> 
+                        <label class="block text-sm font-medium text-gray-700">Reason for 
+Change</label> 
+                        <div class="mt-1 flex items-center space-x-4"> 
+                            <label class="inline-flex items-center"> 
+                                <input type="radio" name="changeReason" value="sale" id="reasonSale" 
+class="form-radio text-blue-600" checked> 
+                                <span class="ml-2 text-gray-700">Sale</span> 
+                            </label> 
+                            <label class="inline-flex items-center"> 
+                                <input type="radio" name="changeReason" value="damage" 
+id="reasonDamage" class="form-radio text-red-600"> 
+                                <span class="ml-2 text-gray-700">Damage</span> 
+                            </label> 
+                        </div> 
+                    </div> 
+                    <div id="salePriceContainer" class="hidden"> 
+                        <label for="salePrice" class="block text-sm font-medium text-gray-700">Sale 
+Price per Unit (₹)</label> 
+                        <input type="number" id="salePrice" name="salePrice" step="0.01" min="0" 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md 
+shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"> 
+                    </div> 
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue
+700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md 
+transition duration-150 ease-in-out transform hover:scale-105"> 
+                        Apply Change 
+                    </button> 
+                </form> 
+                <div class="mt-6 p-4 rounded-md bg-gray-50 shadow-sm border border-gray-200"> 
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3 text-center">Financial 
+Summary</h3> 
+                    <div class="flex justify-between items-center mb-2"> 
+                        <span class="text-gray-700 font-medium">Total Profit:</span> 
+                        <span id="totalProfitDisplay" class="text-green-600 text-lg font
+bold">₹0.00</span> 
+                    </div> 
+                    <div class="flex justify-between items-center"> 
+                        <span class="text-gray-700 font-medium">Total Loss:</span> 
+                        <span id="totalLossDisplay" class="text-red-600 text-lg font
+bold">₹0.00</span> 
+                    </div> 
+                </div> 
+            </div> 
+        </section> 
+ 
+    </main> 
+ 
+    <footer class="bg-gray-800 text-white py-4 mt-6"> 
+        <div class="container mx-auto px-4 text-center"> 
+            <p>&copy; 2023 Smart Register App. All rights reserved.</p> 
+        </div> 
+    </footer> 
+ 
+    <!-- Link to external JavaScript file --> 
+    <script src="{{ url_for('static', filename='script.js') }}"></script> 
+</body> 
+                  </html>
